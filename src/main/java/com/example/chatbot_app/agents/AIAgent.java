@@ -1,20 +1,27 @@
 package com.example.chatbot_app.agents;
 
-import com.example.chatbot_app.tools.AITools;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
 import org.springframework.ai.chat.memory.ChatMemory;
+import org.springframework.ai.tool.ToolCallbackProvider;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.GetMapping;
 import reactor.core.publisher.Flux;
+
+import java.util.Arrays;
 
 @Component
 public class AIAgent {
     private ChatClient chatClient;
 
     public AIAgent(ChatClient.Builder builder,
-                   ChatMemory memory,
-                   AITools tools) {
+                   ChatMemory memory, ToolCallbackProvider tools) {
+        Arrays.stream(tools.getToolCallbacks()).forEach(toolCallback -> {
+            System.out.println("---------------------");
+            System.out.println(toolCallback.getToolDefinition());
+            System.out.println("---------------------");
+        });
+
         this.chatClient = builder
                 .defaultSystem("""
                         Vous êtes un assistant qui se charge de répondre aux question 
@@ -25,7 +32,8 @@ public class AIAgent {
                 .defaultAdvisors(
                         MessageChatMemoryAdvisor.builder(memory).build()
                 )
-                .defaultTools(tools)
+                .defaultToolCallbacks(tools)
+
                 .build();
     }
 
