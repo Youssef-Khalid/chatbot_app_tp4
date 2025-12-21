@@ -2,15 +2,14 @@ package com.example.mcpserver.tools;
 
 import org.springaicommunity.mcp.annotation.McpArg;
 import org.springaicommunity.mcp.annotation.McpTool;
-import org.springframework.ai.tool.annotation.Tool;
-import org.springframework.ai.tool.annotation.ToolParam;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 
 @Component
 public class McpTools {
-    @McpTool(name = "getEmployee", description = "Get information about a given employee")
+    @McpTool(name = "getEmployee",
+            description = "Get information about a given employee")
     public Employee getEmployee(@McpArg(description = "The employee name") String name) {
         return new Employee(name, 12300, 4);
     }
