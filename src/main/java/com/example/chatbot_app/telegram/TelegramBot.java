@@ -25,30 +25,50 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     @PostConstruct // une méthode qui s'exécute juste apres le constructeur
     public void registerTelegramBot() {
+        if (telegramBotToken == null || telegramBotToken.isEmpty()) {
+            System.out.println("WARN: Telegram Bot Token is missing. Skipping registration.");
+            return;
+        }
         try {
             TelegramBotsApi api = new TelegramBotsApi(DefaultBotSession.class);
             api.registerBot(this);
+            System.out.println("Telegram Bot registered successfully!");
         } catch (TelegramApiException e) {
             throw new RuntimeException(e);
         }
     }
 
     @Override
-    public void onUpdateReceived(Update telegramRequest) { // une méthode qui s'exécute quand un client telegram envoie un message
+    public void onUpdateReceived(Update telegramRequest) { // une méthode qui s'exécute quand un client telegram envoie
+                                                           // un message
         try {
-            if (!telegramRequest.hasMessage()) return;
+            if (!telegramRequest.hasMessage())
+                return;
             String messageText = telegramRequest.getMessage().getText();
-            String answer = aiAgent.askAgent(messageText);
             Long chatId = telegramRequest.getMessage().getChatId();
+
+            System.out.println("Received message from " + chatId + ": " + messageText);
+
+            String answer;
+            try {
+                answer = aiAgent.askAgent(messageText);
+                System.out.println("AI Response: " + answer);
+            } catch (Exception e) {
+                System.err.println("Error generating AI response: " + e.getMessage());
+                e.printStackTrace();
+                answer = "Sorry, I encountered an error while processing your request: " + e.getMessage();
+            }
+
             sendTextMessage(chatId, answer);
         } catch (TelegramApiException e) {
-            throw new RuntimeException(e);
+            System.err.println("Telegram API Error: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
     @Override
     public String getBotUsername() {
-        return "EcomAppAiBot";
+        return "EcomAppChatBot";
     }
 
     @Override
@@ -61,4 +81,3 @@ public class TelegramBot extends TelegramLongPollingBot {
         execute(sendMessage);
     }
 }
-
