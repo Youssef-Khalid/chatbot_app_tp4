@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
+import org.telegram.telegrambots.meta.api.methods.ActionType;
+import org.telegram.telegrambots.meta.api.methods.send.SendChatAction;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
@@ -46,6 +48,7 @@ public class TelegramBot extends TelegramLongPollingBot {
                 return;
             String messageText = telegramRequest.getMessage().getText();
             Long chatId = telegramRequest.getMessage().getChatId();
+            sendTypingQuestion(chatId);
 
             System.out.println("Received message from " + chatId + ": " + messageText);
 
@@ -63,6 +66,7 @@ public class TelegramBot extends TelegramLongPollingBot {
         } catch (TelegramApiException e) {
             System.err.println("Telegram API Error: " + e.getMessage());
             e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 
@@ -79,5 +83,12 @@ public class TelegramBot extends TelegramLongPollingBot {
     private void sendTextMessage(long chatid, String text) throws TelegramApiException {
         SendMessage sendMessage = new SendMessage(String.valueOf(chatid), text);
         execute(sendMessage);
+    }
+
+    private void sendTypingQuestion(long chatid) throws TelegramApiException {
+        SendChatAction sendChatAction = new SendChatAction();
+        sendChatAction.setChatId(String.valueOf(chatid));
+        sendChatAction.setAction(ActionType.TYPING);
+        execute(sendChatAction);
     }
 }
