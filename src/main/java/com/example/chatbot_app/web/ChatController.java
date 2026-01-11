@@ -2,6 +2,7 @@ package com.example.chatbot_app.web;
 
 import com.example.chatbot_app.agents.AIAgent;
 import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -20,6 +21,6 @@ public class ChatController {
 
     @GetMapping(value = "/chat", produces = MediaType.TEXT_PLAIN_VALUE)
     public String chat(@RequestParam(name = "query") String query){
-        return aiAgent.askAgent(query);
+        return aiAgent.askAgent(new Prompt(query));
     }
 }

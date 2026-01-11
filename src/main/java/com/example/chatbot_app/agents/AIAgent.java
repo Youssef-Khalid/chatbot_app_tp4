@@ -3,6 +3,7 @@ package com.example.chatbot_app.agents;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
 import org.springframework.ai.chat.memory.ChatMemory;
+import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.tool.ToolCallbackProvider;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -46,10 +47,9 @@ public class AIAgent {
         }
 
         @GetMapping("/chat")
-        public String askAgent(String query) {
-                System.out.println("AIAgent received query: " + query);
-                String response = chatClient.prompt()
-                                .user(query)
+        public String askAgent(Prompt prompt) {
+                System.out.println("AIAgent received query: " + prompt);
+                String response = chatClient.prompt(prompt)
                                 .call().content();
                 System.out.println("AIAgent generated response: " + response);
                 return response;
