@@ -116,13 +116,18 @@ public class TelegramBot extends TelegramLongPollingBot {
 
             Long chatId = telegramRequest.getMessage().getChatId();
             String messageText = telegramRequest.getMessage().getText();
-            String caption = telegramRequest.getMessage().getCaption();
+            //String caption = telegramRequest.getMessage().getCaption();
             List<PhotoSize> photos = telegramRequest.getMessage().getPhoto();
 
             List<Media> mediaList = new ArrayList<>();
 
+            String caption = null;
             // 1. Handle Photos (only if present)
             if (photos != null && !photos.isEmpty()) {
+                caption= telegramRequest.getMessage().getCaption();
+                if (caption == null){
+                    caption= "What do you see in this image";
+                }
                 // Get the last element (Telegram always puts the largest version at the end)
                 PhotoSize largestPhoto = photos.get(photos.size() - 1);
 
